@@ -1,0 +1,20 @@
+# mcp-prompt-guard
+
+> Zero-dependency Python middleware for defending Model Context Protocol (MCP) tool outputs and AI agent contexts against indirect prompt injection, concealed Unicode/HTML comment carriers, and accidental credential leakage.
+
+## Core Capabilities
+- TextSanitizer: Strips hidden HTML comments, Markdown invisible comments, and zero-width / bidi Unicode characters.
+- InjectionDetector: Weighted rule-based detector scoring instruction overrides, role hijacking, credential exfiltration, shell-pipe RCE, and chat delimiter spoofing.
+- SecretRedactor: Masks leaked GitHub tokens, OpenAI/Anthropic API keys, AWS access keys, Bearer tokens, and private keys before entering LLM context.
+- MCPPromptGuard: Drop-in middleware supporting BLOCK, SANITIZE, and AUDIT modes, JSON-RPC MCP `tools/call` response wrapping, and sync/async `@guard.protect_tool` decorators.
+
+## Quickstart
+```python
+from mcp_prompt_guard import GuardMode, MCPPromptGuard
+
+guard = MCPPromptGuard(mode=GuardMode.SANITIZE)
+
+@guard.protect_tool(source="github_issue")
+async def fetch_issue(issue_id: int) -> dict:
+    return {"content": [{"type": "text", "text": "..."}]}
+```
